@@ -36,6 +36,8 @@
             </div>
             <p class="text-center">
                 <button type="button" onclick="testMethod()" class="btn btn-primary">Test method</button>
+                &nbsp;&nbsp;&nbsp;
+                <button type="button" onclick="clearForm()" class="btn btn-secondary">Clear form</button>
             </p>
             <p>
                 <div id="result" class="alert alert-info" role="alert"></div>
@@ -79,6 +81,12 @@
             document.getElementById('error').textContent = '';
             document.getElementById('error').style.display = 'none';
             document.getElementById('result').style.display = 'none';
+        }
+
+        const clearForm = () => {
+            document.getElementById('date').value = '';
+            document.getElementById('value').value = '';
+            document.getElementById('op').value = '';
         }
 
         clearResults();
