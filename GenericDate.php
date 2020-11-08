@@ -173,7 +173,7 @@ class GenericDate
             throw new InvalidArgumentException('Invalid minutes value');
         }
 
-        if (!$this->value) {
+        if (!$this->value && $this->value !== 0) {
             throw new InvalidArgumentException('Invalid value');
         }
     }

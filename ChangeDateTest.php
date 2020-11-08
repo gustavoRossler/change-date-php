@@ -30,6 +30,13 @@ final class ChangeDateTest extends TestCase
         $newDate = $genericDate->changeDate('55/11/2020 15', '+', 123);
     }
 
+    public function testInvalidValue(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $genericDate = new GenericDate();
+        $newDate = $genericDate->changeDate('55/11/2020 15', '+', '');
+    }
+
     public function testInvalidDateMonth(): void
     {
         $this->expectException(InvalidArgumentException::class);
