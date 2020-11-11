@@ -11,13 +11,17 @@ class GenericDate
     protected $value;
     protected $date;
 
+    // 30 dias = 43200 min
+    // 31 dias = 44640 min
+    // 28 dias = 40320
+
     public function getTotalMonthDays($month)
     {
         $month *= 1; // to int
 
         if ($month == 1 || $month == 3 || $month == 5 || $month == 7 || $month == 8 || $month == 10 || $month == 12)
             return 31;
-        else if ($month == 2 || $month == 4 || $month == 6 || $month == 9 || $month == 11)
+        else if ($month == 4 || $month == 6 || $month == 9 || $month == 11)
             return 30;
         else if ($month == 2)
             return 28;
@@ -27,12 +31,18 @@ class GenericDate
 
     public function addMinutesToDate()
     {
-        if (($this->value + $this->minutes) / 60 > 1) {
+        if (($this->value + $this->minutes) / 60 >= 1) {
             $hoursToSum = floor(($this->value + $this->minutes) / 60);
             $this->minutes = (($this->value + $this->minutes) % 60);
 
+            if ($this->minutes >= 60) {
+                $this->minutes = 0;
+                $hoursToSum += 1;
+            }
+
             if (($hoursToSum + $this->hours) >= 24) {
                 $daysToSum = floor(($hoursToSum + $this->hours) / 24);
+                
                 $this->hours = ($hoursToSum + $this->hours) % 24;
 
                 if (($daysToSum + $this->days) > $this->getTotalMonthDays($this->months)) {
@@ -41,7 +51,8 @@ class GenericDate
                     $yearsToSum = 0;
                     $currentMonth = $this->months;
                     $remainingDays = ($daysToSum + $this->days);
-                    while ($remainingDays >= $this->getTotalMonthDays($currentMonth)) {
+                    while ($remainingDays > $this->getTotalMonthDays($currentMonth)) {
+                       
                         $monthDays = $this->getTotalMonthDays($currentMonth);
                         $remainingDays -= $monthDays;
                         $currentMonth++;
@@ -76,17 +87,28 @@ class GenericDate
             if ($this->minutes < 0) {
                 $this->minutes *= -1;
             }
+
             $this->minutes = 60 - $this->minutes;
 
-            if (($this->hours - $hoursToSub) <= 0) {
+            if ($this->minutes >= 60) {
+                $this->minutes = 0;
+                $hoursToSub -= 1;
+            }
+
+            if (($this->hours - $hoursToSub) < 0) {
+
                 $daysToSub = floor((24 - ($this->hours - $hoursToSub)) / 24);
                 $this->hours = ($this->hours - $hoursToSub) % 24;
                 if ($this->hours < 0) {
                     $this->hours *= -1;
                 }
+
                 $this->hours = 24 - $this->hours;
-                if ($this->hours == 24)
+
+                if ($this->hours == 24) {
                     $this->hours = 0;
+                    $daysToSub -= 1;
+                }
 
                 if (($this->days - $daysToSub) <= 0) {
 
@@ -97,8 +119,7 @@ class GenericDate
                     $remainingDays = ($this->days - $daysToSub);
 
                     while ($remainingDays <= 0) {
-                        $monthDays = $this->getTotalMonthDays($currentMonth);
-                        $remainingDays += $monthDays;
+
                         $currentMonth--;
                         $monthsToSub++;
 
@@ -108,6 +129,9 @@ class GenericDate
                             $monthsToSub = 0;
                             $yearsToSub++;
                         }
+
+                        $monthDays = $this->getTotalMonthDays($currentMonth);
+                        $remainingDays += $monthDays;
                     }
 
                     $this->days = $remainingDays;
